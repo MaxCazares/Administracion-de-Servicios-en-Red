@@ -1,0 +1,49 @@
+# lista de protocolo y puertos: https://lovtechnology.com/listado-de-puertos-tcp-y-udp-bien-conocidos/
+
+# VLAN's
+
+    # Creación de una VLAN
+        - conf t
+        - vlan (vlan-id)
+        - name (vlan-name)
+        - end
+
+    # Asignación de puerto a una VLAN
+        - conf t
+        - int (interface-id)
+        - switchport mode access
+        - switchport access vlan (vlan-id)
+        - end
+
+    # Cambio de la membresia del puerto de VLAN
+        - conf t
+        - int (interface-id)
+        - no switchport access vlan
+        - end
+
+        # Eliminación de VLAN's
+	- conf t
+	- no vlan (vlan-id)
+	- end
+
+    # Verificación de la información de VLAN
+        - show vlan name (vlan-name)
+        - show vlan summary
+
+    # Configuración de enlaces troncales con IEEE 802.1Q
+        - conf t
+        - int (interface-id)
+        - switchport mode trunk
+        - switchport trunk native vlan (vlan-id)
+        - switchport trunk allowed vlan (vlan-list
+        - end
+
+    # Reestablecer el estado por defecto de los troncales
+        - conf t
+        - int (interface-id)
+        - no switchport trunk allowed vlan
+        - no switchport trunk native vlan
+        - end
+
+    # Verificaión de los troncales
+        - show interface (interface-id) switchport

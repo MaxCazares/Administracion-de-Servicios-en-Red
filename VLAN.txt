@@ -1,4 +1,4 @@
-Las VLAN's pueden segmentar dicpositivos dentro de una LAN sin considerar la ubication física de los usuarios o dispositivos.
+Las VLAN's pueden segmentar dispositivos dentro de una LAN sin considerar la ubicacion física de los usuarios o dispositivos.
 
 Una VLAN es una partición lógica de una red de capa 2.
 
@@ -6,35 +6,33 @@ Multiples particiones pueden ser creadas y multiples VLAN's pueden coexistir.
 
 La partición de una red de capa 2 tiene lugar en un dispositivo de capa 2, generalmente, en un switch.
 
-Cada VLAN es un dominio de broadcast que puede abarcar multiples segmentos físicos de LAN-
+Cada VLAN es un dominio de broadcast que puede abarcar multiples segmentos físicos de LAN
 
 Los hosts en la misma VLAN son inconsientes de la existencia de VLAN's
 
 Las VLAN son mutuamente isladas y los paquetes solo pueden pasarse entre VLAN's a través de un router.
 
 # Beneficios de las VLAN's
-
-Mejora la seguridad
-Reduce el costo
-Mejora el rendimiento
-Dominios de broadcast más pequeños
-Eficiencia IT
-Eficiencia de administración
-Projecto más simple y manejo de aplicación
+	- Mejora la seguridad
+	- Reduce el costo
+	- Mejora el rendimiento
+	- Dominios de broadcast más pequeños
+	- Eficiencia IT
+	- Eficiencia de administración
+	- Projecto más simple y manejo de aplicación
 
 # Tipos de VLAN's
+	- VLAN default: también conocida como VLAN 1. Todos los puertos de un switch son miembros de la VLAN 1 por default.
 
-VLAN default: también conocida como VLAN 1. Todos los puertos de un switch son miembros de la VLAN 1 por default.
+	- VLAN de datos: Las VLAN de datos son comunmente creadas para un grupo de usuarios o dispositivos específicos. Transportan tráfico generado por el usuario.
 
-VLAN de datos: Las VLAN de datos son comunmente creadas para un grupo de usuarios o dispositivos específicos. Transportan tráfico generado por el usuario.
+	- VLAN nativa: Esta es la VLAN que transporta todo el tráfico sin etiquetar. Este tráfico no se origina de un puerto VLAN. La VLAN nativa es la VLAN 1 por defecto.
 
-VLAN nativa: Esta es la VLAN que transporta todo el tráfico sin etiquetar. Este tráfico no se origina de un puerto VLAN. La VLAN nativa es la VLAN 1 por defecto.
-
-VLAN de administración: Esta es la VLAN que es creada para transportar tráfico de manejo de red incluyendo SSH, SNMP, SYSLOG y más. La VLAN 1 (99) es por defecto la VLAN usada para la administración de la red.
+	- VLAN de administración: Esta es la VLAN que es creada para transportar tráfico de manejo de red incluyendo SSH, SNMP, SYSLOG y más. La VLAN 1 (99) es por defecto la VLAN usada para la administración de la red.
 
 # VLAN's de voz
 
-Para soportar tráfico de voz sensible al tiempo, los switched de cisco admiten  VLAN de voz que requiere:
+	Para soportar tráfico de voz sensible al tiempo, los switched de cisco admiten  VLAN de voz que requiere:
 
 	- Ancho de banda asegurado
 	- Retraso de menos de 150 ms en toda la red para garantizar la calidad de la voz

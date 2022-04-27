@@ -146,3 +146,49 @@ To make wildcard masks easier to read, the keywords host and any can help identi
     The show access-lists command output shows the results after the SSH attempts by PC1 and PC2.
     
     Notice the match results in the permit and the deny statements.
+
+# Structure of an Extended IPv4 ACL's
+    - Extended IPv4 ACLs provide more precise filtering. 
+    - Extended ACLs are numbered 100 to 199 and 2000 to 2699, providing a total of 799 possible extended numbered ACLs. 
+    - Extended ACLs can also be named.
+    - Extended ACLs are used more often than standard ACLs because they provide a greater degree of control. 
+    - Extended ACLs can filter on protocol and port number.
+
+# Configuration of Extended ACL's
+- An application can be specified by configuring either:
+    - The port number
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq 23
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq 21
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq 20
+    
+    - The name of a well-known port
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq telnet
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq ftp
+        * access-list 114 permit tcp 192.168.20.0 0.0.0.255 any eq ftp-data
+
+- The full syntax of the extended ACL command is as follows:
+access-list (ACL-id) {deny | permit | remark} protocol {source source-wildcard][operator [port-number | port-name]] {destination destination-wildcard][operator [port-number | port-name]]
+
+- The established parameter allows only responses to traffic that originates from any network to return to that network. 
+
+# Applying an extended ACL
+    - Applying extended ACLs is similar to standard ACLs except that they should be applied as close to the source.
+        * access-list 103 permit tcp 192.168.10.0 0.0.0.255 any eq 80
+        * access-list 103 permit tcp 192.168.10.0 0.0.0.255 any eq 443
+        * access-list 104 permit tcp any 192.168.10.0 0.0.0.255 established
+        * interface g0/0
+        * ip access-group 103 in
+        * ip access-group 104 out
+
+# Named extended ACLs 
+    - Named extended ACLs are created in the same way that named standard ACLs are created. 
+        * ip access-list extended SURFING
+        * permit tcp 192.168.10.0 0.0.0.255 any eq 80
+        * permit tcp 192.168.10.0 0.0.0.255 any eq 443
+        * exit
+        * int g0/0
+        * ip access-group SURFING in
+
+# Verifying extended ACL
+    - show ip interface
+    - show access-lists
