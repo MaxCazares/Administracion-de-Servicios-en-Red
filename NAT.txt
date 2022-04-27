@@ -1,0 +1,175 @@
+# What is NAT?
+    Private IP addresses cannot be routed over the Internet.
+    
+    NAT is used to translate private IP addresses used inside a company to public addresses that can be routed over the Internet.
+    
+    NAT hides internal IPv4 addresses from outside networks.
+        - Companies use the same private IPv4 addresses so outside devices cannot tell one company’s 10.x.x.x network from another company’s 10.x.x.x network.
+    
+    A NAT-enabled router can be configured with a public IPv4 address.
+    
+    A NAT-enabled router can be configured with multiple public IPv4 addresses to be used in a pool or NAT pool for internal devices configured with private addresses.
+
+# NAT Terminology
+    Four types of addresses: inside, outside, local, and global 
+    Always consider the device that is having its private address translated to understand this concept.
+
+    - Inside address – address of the company network device that is being translated by NAT
+    - Outside address – IP address of the destination device
+    - Local address – any address that appears on the inside portion of the network
+    - Global address – any address that appears on the outside portion of the network
+
+# How NAT works
+    - The private (internal) IP address gets translated to a public IP address used to reach the external server.
+    - The translated public address is used by the server to send the requested information to the device that actually has a private IP address assigned to it. 
+    - The NAT-enabled router consults the routing table to see what private address requested the data.
+
+# Static NAT
+    - Static address translation (static NAT) assigns one public IP address to one private IP address
+    - Commonly used for servers that need to be accessed by external devices or for devices that must be accessible by authorized personnel when offsite
+    - One-to-one address mapping between local and global addresses
+
+# Dynamic NAT
+    - Dynamic NAT assigns a public IP address from a pool of addresses to each packet that originates from a device that has a private IP address assigned when that packet is destined to a network outside the company.
+        - Addresses are assigned on a first-come, first serve basis
+        - The number of internal devices that can transmit outside the company is limited to the number of public IP addresses in the pool.
+
+# PAT
+    - PAT (otherwise known as NAT overload) can use one public IPv4 address to allow thousand of private IPv4 addresses to communicate with outside network devices.
+    - Uses port numbers to track the session
+
+# Next available port
+    - PAT tries to preserve the original source port number.
+        - If that port number is already use, PAT will assign the first available port number for the appropriate port group
+            * 0 - 511
+            * 512 - 1023
+            * 1024 - 65,535
+        - When there are no more port numbers available, PAT moves to the next public IP address in the pool if there is one.
+
+# Comparing NAT and PAT
+    - Static NAT translates address on a 1:1 basis
+    - PAT uses port numbers so that one public address can be used for multiple privately addressed devices
+        - PAT can still function with a protocol such as ICMP that does not use TCP or UDP
+
+# Advantages of NAT
+    - Conserves the legally registered addressing scheme
+        - Every company can use the private IP addresses
+    
+    - Increases the flexibility of connections to the public network
+        - Multiple NAT pools, backup pools, and load-balancing across NAT pools
+
+    - Provides consistency for internal network addressing schemes
+        - Do not have to readdress the network if a new ISP or public IP address is assigned
+
+    - Provides network security
+        - Hides user private IPv4 addresses
+
+# Disadvantages of NAT
+    - Performance is degraded.
+        - The NAT-enabled border device must track and process each session destined for an external network.
+    
+    - End-to-end functionality is degraded.
+        - Translation of each IPv4 address within the packet headers takes time.
+
+    - End-to-end IP traceability is lost.
+        - Some applications require end-to-end addressing and cannot be used with NAT.
+        - Static NAT mappings can sometimes be used.
+        - Troubleshooting can be more challenging.
+
+    - Tunneling becomes more complicated.
+    
+    - Initiating TCP connections can be disrupted.
+
+# Configure Static NAT
+ - ip nat inside source static (local-ip) (global-ip)
+ - interface (interface-id)
+ - ip add (ip) (mask)
+ - ip nat inside
+ - exit
+ - interface (interface-id)
+ - ip add (ip) (mask
+ - ip nat outside
+
+# Verifying Static NAT
+    - show ip nat translations
+    - show ip nat statistics
+    - clear ip nat statistics
+
+# Configuring Dynamic NAT
+    - ip nat pool name (start-ip) (end-ip) {netmask (netmask) | prefix-length (prefix-length)}
+    - access-list access-list-number permit (source) [source-wildcard]
+    - ip nat inside source list (access-list-number) pool (name)
+    - interface (interface-id)
+    - ip nat inside
+    - interface (interface-id)
+    - ip nat outside
+
+    - ip nat pool NAT-POOL1 209.165.200.226 209.165.200.240 netmask 255.255.255.224
+    - access-list 1 permit 192.168.0.0 0.0.255.255
+    - ip nat inside source list 1 pool NAT-POOL1
+    - int se0/0/0
+    - ip nat inside
+    - int se0/1/0
+    - ip nat outside
+
+# Verifying Dynamic NAT
+    - show ip nat translations
+    - show ip nat translations verbose
+
+    - clear ip nat translation *: Clear all dynamic address translation entries from the NAT translation table.
+    - clear ip nat translation inside (global-ip) (local-ip) [outside (local-ip) (global-ip)]: Clear a simple dynamic translation entry containig an inside translation or both inside and outside translation.
+    - clear ip nat translation (protocol) inside (global-ip) (global-port) (local-ip) (local-port) [outside (local-ip) (local-port) (global.ip) (global-port)]: Cclear an extended dynamic translation entry.
+
+# Configuring PAT: Address Pool
+    - The pool contains the public addresses.
+    - The ACL defines which private IP addresses gets translated.
+    - The ip nat inside source list acl# pool name overload command ties Step 1 with Step 2.
+
+    - Define a pool of global addresses to be used for overload translation
+        * ip nat pool name (start-ip) (end-ip) {netmask (netmask) prefix-length (prefix-length)}
+    
+    - Define a standar access list permitting the addresses that should be translated.
+        * acces-list (access-list-number) permit (source) [source-wildcard]
+    
+    - Establish overload translation, specify the access list and pool defined in prior steps
+        * ip nat inside source list (access-list-number) pool (name) overload
+    
+    - identify the inside interface
+        * interface type number
+        * ip nat inside
+
+    - Identify the outside interface
+        * interface type number
+        * ip nat outside
+
+    - ip nat pool NAT-POOL2 209.165.200.226 209.165.200.240 netmask 255.255.255.224
+    - access-list 1 permit 192.168.0.0 0.0.255.255
+    - ip nat inside source list 1 pool NAT-POOL2 overload
+    - interface se0/0/0
+    - ip nat inside
+    - interface se0/1/0
+    - ip nat outside
+
+# Configuring PAT: Single Address
+    - When a public address is assigned to the external interface on the border router, that public address can be used for PAT and translate internal private IP addresses to the public IP address.
+    - Still need an ACL to define which private IP addresses gets translated.
+    - Instead of associating an ACL with a pool, the ACL is associated with an interface that has a public IP address assigned
+
+    - Define a standar access list permitting the addresses that should be translated
+        * access-list (access-list-number) permit (source) [source-wildcard]
+    
+    - Establish dynamic source translation, specifying the ACL, exit interface and overload options
+        * ip nat inside source list (access-list-number) interface (interface-id) overload
+
+    - identify the inside interface
+        * interface type number
+        * ip nat inside
+
+    - Identify the outside interface
+        * interface type number
+        * ip nat outside
+
+# Verifying PAT
+    - show ip nat translations
+    - clear ip nat statistics
+    - show ip nat statistics

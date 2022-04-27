@@ -1,0 +1,148 @@
+An ACl is a series of IOS commands that control whether a router forwards or drop packets based on information found in the packet header.
+ACL's are not configured by default on a router.
+
+ACL's can perform the following tasks:
+    - Limit network traffic to increase network performance. For example, video traffic could be blocked if it's not permitted. 
+    - Provide traffic control. ACL's can help verify routing updates are from a known source.
+    - ACL's provide security for network access and can block a host or a network.
+    - Filter traffic based on traffic type such as Telnet traffic.
+    - Screen hosts to permit or deny access to services such as FTP or HTTP
+
+An ACL is a sequential list of permit or deny statements, known as access control entries (ACEs)    
+    ACE's are commonly calles ACL statements
+
+When network traffic passes through an interface configured with an ACL, the router compares the information within the packet against each ACE, in sequential order, to determine if the packet matches one of the ACE's. This is referred to as packet filtering.
+
+# Packet filtering 
+    - can analyze incoming and/or outgoing 
+    - can occur at layer 3 or 4
+
+The last statement of an ACL is always an implicit deny. This is automatically inserted at the end of each ACL and blocks all trafic. Because of this, all ACL's should have at least one permit statement.
+
+ACL's do not act on packets that originate from the router itself.
+    - ACL's define the set of rules that give added control for packets that enter inboud interfaces, packets that relay through the router, and packets that exit outbound interfaces of the router.
+
+ACL's can be configured to apply to inbound traffic and outbound traffic:
+    - Inbound ACL's: incoming packets are processed before they are routed to the outbound interface.
+    - Outbound ACL's: incoming packets are routed to the outbound interface, and then they are porcessed through the outbound ACL.
+
+IPv4 ACEs require the use of wildcard masks.
+
+    - A wildcard mask is a string of 32 binary digits (1s and 0s) used by the router to determine which bits of the address to examine for a match.
+    - Wildcard masks are often referred to as an inverse mask since unlike a subnet mask where a binary 1 is a match, a binary 0 is a match with wildcard masks.
+
+    - 0 means to match the value of the corresponding address bit
+    - 1 means to ignore the value of the corresponding address bit
+
+To make wildcard masks easier to read, the keywords host and any can help identify the most common uses of wildcard masking.
+    - host substitutes for the 0.0.0.0 mask
+    - any substitutes for the 255.255.255.255 mask
+
+    - If you would like to match the 192.169.10.10 address, you could use 192.168.10.10 0.0.0.0 or, you can use: host 192.168.10.10
+        - access-list 1 permit 192.168.10.10 0.0.0.0
+        ***or
+        - access-list 1 permit host 192.168.10.10
+
+    - In Example 2, instead of entering 0.0.0.0 255.255.255.255, you can use the keyword any by itself.
+        - access-list 1 permit 0.0.0.0 255.255.255.255
+        ***or
+        - access-list 1 permit any 
+
+# General Guidelines for Creating ACL's 
+
+    - Use ACLs in firewall routers positioned between your internal network and an external network such as the Internet.
+    - Use ACLs on a router positioned between two parts of your network to control traffic entering or exiting a specific part of your internal network.
+    - Configure ACLs on border routers such as those situated at the edge of your network.
+    - This will provide a basic buffer from the outside network that is less controlled.
+    - Configure ACLs for each network protocol configured on the border router interfaces.
+
+# ACL best practices
+
+    - Base your ACL's on the security policty of the organization: This will ensure you implement organizational security guidelines
+    - Prepare a descripcion of what you want your ACl's to do: This will help you avoid inadvertently Creating potential access problems
+    - Use a text editor ro create, edit and save ACL's: This will help you create a library of reusable ACL's
+    - Test your ACL's on a development network before implementing on a production network: This will help you avoid costly errors
+
+# General Guidelines for Creating ACLs
+
+    - The proper placement of an ACL can make the network operate more efficiently. For example, and ACL can be placed to reduce unnecessary traffic.
+    - Every ACL should be placed where it has the greatest impact on efficiency.
+        
+        * Extended ACLs – Configure extended ACLs as close as possible to the source of the traffic to be filtered. 
+        This will prevent undesirable traffic as close to the source without it crossing the network infrastructure.
+
+        * Standard ACLs – Since standard ACLs do not specify destination addresses, they should be configured as close to the destination as possible.
+
+# Numbered Standard IPv4 ACL Syntax
+
+    The access-list global configuration command defines a standard ACL with a number in the range of 1 through 99 or 1300 to 1999.
+        - The full syntax of the standard ACL command is as follows:
+            * Router(config)# access-list (accesslist-number) { deny | permit | remark} source [source-wildcard][ log ]
+            * Router(config)# access-list 1 permit 192.168.10.0 0.0.0.255
+    
+    To remove the ACL, the global configuration no access-list command is used. Use the show access-list command to verify the removal of the ACL.
+
+# Applying Standard IPv4 ACLs to Interfaces
+
+    After a standard IPv4 ACL is configured, it is linked to an interface using the ip access-group command in interface configuration mode:
+        * Router(config-if)# ip access-group {access-list-number | access-listname} { in | out } 
+        * Router(config)# int se0/0/0
+        * Router(config-if)# ip acces-group 1 out
+        
+    To remove an ACL from an interface, first enter the no ip access-group command on the interface, and then enter the global no access-list command to remove the entire ACL.
+
+# Named Standard IPv4 ACL Syntax
+
+    Identifying an ACL with a name rather than with a number makes it easier to understand its function.
+    - Use the ip access-list command to create a named ACL. Names are alphanumeric, case sensitive, and must be unique.
+        * ip access-list standard NO_ACCESS
+
+    - Use permit or deny statements as needed. You can also use the remark command to add comments.
+        * deny host 192.168.11.10
+        * permit any
+
+    - Apply the ACL to an interface using the ip access-group name command.
+        * int g0/0
+        * ip access-group NO_ACCESS out
+ 
+# Method 1 - Use a text editor
+    It is important to note that when using the no access-list command, different IOS software releases act differently.
+    - If the ACL that has been deleted is still applied to the interface, some IOS versions act as if no ACL is protecting your network while others deny all traffic.
+
+# Method 2 - Use sequence numbers
+    * access-list 1 deny 192.168.10.99
+    * access-list 1 permit 192.168.0.0 0.0.255.255
+    * show access-list 1
+        + 10 deny 192.168.10.99
+        + 20 permit 192.168.0.0, wildcard bits 0.0.255.255
+    * conf t
+    * ip access-list standar 1
+    * no 10
+    * 10 deny host 192.168.10.10
+    * end
+    * show access-list 1
+        + 10 deny 192.168.10.10
+        + 20 permit 192.168.0.0, wildcard bits 0.0.255.255
+
+# Verifying ACLs
+    - Use the show ip interface command to verify that the ACL is applied to the correct interface.
+        * The output will display the name of the access list and the direction in which it was applied to the interface.
+        * Use the show access-lists command to display the access-lists configured on the router.
+
+# The access-class Command
+    Administrative VTY access to Cisco devices should be restricted to help improve security.
+    
+    Restricting VTY access is a technique that allows you define which IP addresses are allowed remote access to the router EXEC process.
+    
+    The access-class command configured in line configuration mode will restrict incoming and outgoing connections between a particular VTY (into a Cisco device) and the addresses in an access list.
+
+    * Router(config-line)# access-class access-list-number {in [vrf-also ] | out }
+
+# Verifying the VTY Port is Secured
+    Verification of the ACL configuration used to restrict VTY access is important. 
+    
+    The figure to the left shows two devices trying to ssh into two different devices.
+    
+    The show access-lists command output shows the results after the SSH attempts by PC1 and PC2.
+    
+    Notice the match results in the permit and the deny statements.
