@@ -95,7 +95,7 @@ To make wildcard masks easier to read, the keywords host and any can help identi
 
     Identifying an ACL with a name rather than with a number makes it easier to understand its function.
     - Use the ip access-list command to create a named ACL. Names are alphanumeric, case sensitive, and must be unique.
-        * ip access-list standard NO_ACCESS
+        * ip access-list standard (name)
 
     - Use permit or deny statements as needed. You can also use the remark command to add comments.
         * deny host 192.168.11.10
@@ -103,7 +103,7 @@ To make wildcard masks easier to read, the keywords host and any can help identi
 
     - Apply the ACL to an interface using the ip access-group name command.
         * int g0/0
-        * ip access-group NO_ACCESS out
+        * ip access-group (name) out
  
 # Method 1 - Use a text editor
     It is important to note that when using the no access-list command, different IOS software releases act differently.

@@ -1,3 +1,8 @@
+# Private Adresses Space
+    A : 10.0.0.0 - 10.255.255.255 // 10.0.0.0/8
+    B : 172.16.0.0 - 172.31.255.255 // 172.16.0.0/12
+    C : 192.168.0.0 - 192.168.255.255 // 192.168.0.0/16
+
 # What is NAT?
     Private IP addresses cannot be routed over the Internet.
     
@@ -81,14 +86,14 @@
     - Initiating TCP connections can be disrupted.
 
 # Configure Static NAT
- - ip nat inside source static (local-ip) (global-ip)
- - interface (interface-id)
- - ip add (ip) (mask)
- - ip nat inside
- - exit
- - interface (interface-id)
- - ip add (ip) (mask
- - ip nat outside
+    - ip nat inside source static (local-ip) (global-ip)
+    - interface (interface-id)
+    - ip add (ip) (mask)
+    - ip nat inside
+    - exit
+    - interface (interface-id)
+    - ip add (ip) (mask
+    - ip nat outside
 
 # Verifying Static NAT
     - show ip nat translations
@@ -97,7 +102,7 @@
 
 # Configuring Dynamic NAT
     - ip nat pool name (start-ip) (end-ip) {netmask (netmask) | prefix-length (prefix-length)}
-    - access-list access-list-number permit (source) [source-wildcard]
+    - access-list (access-list-number) permit (source) [source-wildcard]
     - ip nat inside source list (access-list-number) pool (name)
     - interface (interface-id)
     - ip nat inside
@@ -129,7 +134,7 @@
         * ip nat pool name (start-ip) (end-ip) {netmask (netmask) prefix-length (prefix-length)}
     
     - Define a standar access list permitting the addresses that should be translated.
-        * acces-list (access-list-number) permit (source) [source-wildcard]
+        * access-list (access-list-number) permit (source) [source-wildcard]
     
     - Establish overload translation, specify the access list and pool defined in prior steps
         * ip nat inside source list (access-list-number) pool (name) overload

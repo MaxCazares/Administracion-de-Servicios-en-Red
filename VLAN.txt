@@ -50,7 +50,7 @@ CISCO IOS admite IEEE 802.1Q, un popular protocolo de VLAN troncales
 # Control de los dominios de broadcast con VLAN's
 
 Si un puerto de un switch recibe un trama de broadcast, lo reenviará a todos los puertos excepto el puerto de origen
-	- Eventualmente,la red entera recibirá el broadcast porque la red es un solo dominio de broadcast
+	- Eventualmente, la red entera recibirá el broadcast porque la red es un solo dominio de broadcast
 
 Las VLAN's pueden ser usadas para limitar el alcance de los tramas  de broadcast porque cada VLAN es un dominio de broadcast
 	- Las VLAN's ayudan a controlar el alcance de un trama de broadcast y su impacto en la red
@@ -134,6 +134,7 @@ Las VLAN pueden dividirse en 2 categorias
 # Verificación de la información de VLAN
 	- show vlan name (vlan-name)
 	- show vlan summary
+	- show interfaces vlan (vlan-id)
 
 # Configuración de enlaces troncales con IEEE 802.1Q
 	- conf t
@@ -146,8 +147,8 @@ Las VLAN pueden dividirse en 2 categorias
 # Reestablecer el estado por defecto de los troncales
 	- conf t
 	- int (interface-id)
-	- no switchport trunk allowed vlan
-	- no switchport trunk native vlan
+	- no switchport trunk native vlan (vlan-native-id)
+	- no switchport trunk allowed vlan (vlans-ids)
 	- end
 
 # Verificaión de los troncales
@@ -171,34 +172,34 @@ Los switches de capa 2 no pueden reenviar el tráfico entre VLAN's sin la asiste
 El enrutamiento entre VLAN's es un proceso para reenviar el tráfico en una red de una VLAN a otra usando un router
 
 # Enrutamiento entre VLAN's heredado
- 
-** En el pasado
-	- Los routers actuales fueron usados para enrutar entre VLAN'se
+  
+** (Legacy) En el pasado
+	- Los routers actuales fueron usados para enrutar entre VLAN's
 	- Cada VLAN estaba conectada a una interfaz física diferente del router
 	- Los paquetes llegarían al router mediante una interfaz, se enrutarían y dejarían a tráves de otra
 	- Debido a que las interfaces del router estaban conectadas a las VLAN's y tenían direcciones IP específicas de esa VLAN, se logró el enrutamiento entre VLAN's
 	- Las redes grandes con un gran número de VLAN's requerían muchas interfaces de router
 
-# Enrutamiento entre VLAN's con un router en una conexión
+# Enrutamiento entre VLAN's con un router en una conexión (router-on-a-stick)
 	- El enfoque de router en una conexión utiliza solo una de las inter físicas del router
 	- Una de las interfaces físicas del router es configurada como un puerto troncal 802.1Q para entender las etiquetas de VLAN
 	- Se crean subinterfaces lógicas; una subinterfaz por VLAN
 	- Cada subinterfaz es configurada con una dirección ip de una VLAN que representa
 	- Los miembros de la VLAN son configurados para usar la dirección de la subinterfaz como una puerta de enlace por defecto.
 
-# configuración del enrutamiento entre VLAN's heredado
-	- El enrutamiento entre VLAN's heredado requiere routers que tengan multiples interfaces físicas
+# configuración del enrutamiento legacy entre VLAN's 
+	- El enrutamiento legacy entre VLAN's requiere routers que tengan multiples interfaces físicas
 	- Cada una de las interfaces físicas es conectada a una única VLAN
 	- Cada interfaz tambien es configurada con una dirección IP para la subred asociada con la VLAN particular
 	- Los dispositivos de red usan el router como una puerta de enlace para acceder a los dispositivos conectados a las otras VLAN's
 
-# configuración del enrutamiento entre VLAN's heredado: configuración del switch
+# configuración del enrutamiento legacy entre VLAN's: configuración del switch
 	- conf t
 	- vlan (vlan-id)
 	- int (interface-id)
 	- switchport access vlan (vlan-id)
 
-# configuración del enrutamiento entre VLAN's heredado: configuración del router
+# configuración del enrutamiento legacy entre VLAN's: configuración del router
 	- interface (interface-id)
 	- ip add (ip) (mask)
 	- no shut

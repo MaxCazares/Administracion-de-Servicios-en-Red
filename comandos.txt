@@ -1,5 +1,33 @@
 # lista de protocolo y puertos: https://lovtechnology.com/listado-de-puertos-tcp-y-udp-bien-conocidos/
 
+# 2do
+
+Pregunta 1: Falso
+Pregunta 2: 
+    S1(config-if)# switchport access vlan 100
+    S1(config-if)# switchport mode access
+    S1(config)# interface fa0/24
+
+Pregunta 3: 0.0.15.255
+Pregunta 4: Nativa
+Pregunta 5: Nat dinámica
+Pregunta 6: Falso
+
+Pregunta 7: No se recibió comunicación mediante Telnet, ya que no existen matches
+Pregunta 8: No estoy seguro pero creo que verdadero
+Pregunta 9: Se ocupa una PAT, ya que después de la dirección IP se muestra el número de puerto, además de ser la salida del comando show ip nat translation
+
+Pregunta 10: 
+    access-list 110 permit tcp 192.168.20.0 0.0.0.255 host 192.168.40.1 eq HTTP
+    access-list 110 permit tcp 192.168.20.0 0.0.0.255 host 192.168.40.1 eq HTTPS
+    interface Fa0/3/0
+    ip access-group 110 in
+    end
+
+Pregunta 11: PAT (Port Address Traduction), numero de puerto del 80 y fue utilizado TCP
+Pregunta 12: access-list 1 permit 172.16.4.0 0.0.0.1.255
+Pregunta 13: Overload & ip nat outside
+
 # VLAN's
 
     # Creación de una VLAN
@@ -29,6 +57,7 @@
     # Verificación de la información de VLAN
         - show vlan name (vlan-name)
         - show vlan summary
+        - show interfaces vlan (vlan-id)
 
     # Configuración de enlaces troncales con IEEE 802.1Q
         - conf t
@@ -41,9 +70,151 @@
     # Reestablecer el estado por defecto de los troncales
         - conf t
         - int (interface-id)
-        - no switchport trunk allowed vlan
-        - no switchport trunk native vlan
+        - no switchport trunk native vlan (vlan-native-id)
+        - no switchport trunk allowed vlan (vlans-ids)
         - end
 
     # Verificaión de los troncales
         - show interface (interface-id) switchport
+    
+    # configuración del enrutamiento legacy entre VLAN's: configuración del switch
+	- conf t
+	- vlan (vlan-id)
+	- int (interface-id)
+	- switchport access vlan (vlan-id)
+
+    # configuración del enrutamiento legacy entre VLAN's: configuración del router
+        - interface (interface-id)
+        - ip add (ip) (mask)
+        - no shut
+    
+    # configuración de router en una conexión: configuración del switch
+	- conf t
+	- vlan (vlan-id)
+	- int (interface-id)
+	- switchport mode trunk
+	- end
+
+    # configuración de router en una conexión: configuración de la interfaz en el router
+        - conf t
+        - int (interface-id).(vlan-id) **(g0/0.10)
+        - encapsulation dot1q (vlan-id)
+        - ip add (ip) (mask)
+        - int (interface-id)
+        - no shut
+
+    # verifiación de las subinterfaces
+        - show ip route
+
+# ACL's
+    # command defines a standar ACL
+        * Router(config)# access-list (accesslist-number) { deny | permit | remark} source [source-wildcard][ log ]
+        * Router(config)# access-list 1 permit 192.168.10.0 0.0.0.255
+    
+    # remove an entire ACL
+        * no access-list (accesslist-number)
+    
+    # Verify an ACL
+        * show access-list (accesslist-number)
+        * show ip interface (interface-id)
+    
+    # Applying an ACL
+        * Router(config)# int se0/0/0
+        * Router(config-if)# ip access-group {access-list-number | access-listname} { in | out } 
+        * Router(config-if)# ip acces-group 1 out
+    
+    # Named Standar ACL
+        * ip access-list standard (name)
+        * {deny | permit} source [source-wildcard]
+        * int g0/0
+        * ip access-group (name) out
+
+    # Method 2 - Use sequence numbers
+        * access-list 1 deny 192.168.10.99
+        * access-list 1 permit 192.168.0.0 0.0.255.255
+        * show access-list 1
+            + 10 deny 192.168.10.99
+            + 20 permit 192.168.0.0, wildcard bits 0.0.255.255
+        * conf t
+        * ip access-list standar 1
+        * no 10
+        * 10 deny host 192.168.10.10
+        * end
+        * show access-list 1
+            + 10 deny 192.168.10.10
+            + 20 permit 192.168.0.0, wildcard bits 0.0.255.255
+
+    # Extended ACL's
+        - access-list (ACL-id) {deny | permit | remark} protocol {source source-wildcard][operator [port-number | port-name]] {destination destination-wildcard][operator [port-number | port-name]]
+
+    # Applying an extended ACL
+        * access-list 103 permit tcp 192.168.10.0 0.0.0.255 any eq 80
+        * access-list 103 permit tcp 192.168.10.0 0.0.0.255 any eq 443
+        * access-list 104 permit tcp any 192.168.10.0 0.0.0.255 established
+        * interface g0/0
+        * ip access-group 103 in
+        * ip access-group 104 out
+
+    # Named extended ACLs 
+        * ip access-list extended SURFING
+        * permit tcp 192.168.10.0 0.0.0.255 any eq 80
+        * permit tcp 192.168.10.0 0.0.0.255 any eq 443
+        * exit
+        * int g0/0
+        * ip access-group SURFING in
+
+    # Verifying extended ACL
+        - show ip interface
+        - show access-lists 
+        
+# NAT
+
+    # Configure Static NAT
+        - ip nat inside source static (local-ip) (global-ip)
+        - interface (interface-id)
+        - ip add (ip) (mask)
+        - ip nat inside
+        - exit
+        - interface (interface-id)
+        - ip add (ip) (mask
+        - ip nat outside
+
+    # Verifying Static NAT
+        - show ip nat translations
+        - show ip nat statistics
+        - clear ip nat statistics
+
+# Configuring Dynamic NAT
+    - ip nat pool name (start-ip) (end-ip) {netmask (netmask) | prefix-length (prefix-length)}
+    - access-list (access-list-number) permit (source) [source-wildcard]
+    - ip nat inside source list (access-list-number) pool (name)
+    - interface (interface-id)
+    - ip nat inside
+    - interface (interface-id)
+    - ip nat outside
+
+# Verifying Dynamic NAT
+    - show ip nat translations
+    - show ip nat translations verbose
+
+# Configuring PAT: Address Pool
+    - ip nat pool name (start-ip) (end-ip) {netmask (netmask) prefix-length (prefix-length)}
+    - acces-list (access-list-number) permit (source) [source-wildcard]
+    - ip nat inside source list (access-list-number) pool (name) overload
+    - interface (interface-id)
+    - ip nat inside
+    - interface (interface-id)
+    - ip nat outside
+
+# Configuring PAT: Single Address
+    - access-list (access-list-number) permit (source) [source-wildcard]
+    - ip nat inside source list (access-list-number) interface (interface-id) overload
+    - interface (interface-id)
+    - ip nat inside
+    - interface (interface-id)
+    - ip nat outside
+
+# Verifying PAT
+    - show ip nat translations
+    - clear ip nat statistics
+    - show ip nat statistics
