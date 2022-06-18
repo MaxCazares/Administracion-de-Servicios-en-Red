@@ -1,0 +1,230 @@
+Las VLAN's pueden segmentar dispositivos dentro de una LAN sin considerar la ubicacion física de los usuarios o dispositivos.
+
+Una VLAN es una partición lógica de una red de capa 2.
+
+Multiples particiones pueden ser creadas y multiples VLAN's pueden coexistir.
+
+La partición de una red de capa 2 tiene lugar en un dispositivo de capa 2, generalmente, en un switch.
+
+Cada VLAN es un dominio de broadcast que puede abarcar multiples segmentos físicos de LAN
+
+Los hosts en la misma VLAN son inconsientes de la existencia de VLAN's
+
+Las VLAN son mutuamente isladas y los paquetes solo pueden pasarse entre VLAN's a través de un router.
+
+# Beneficios de las VLAN's
+	- Mejora la seguridad
+	- Reduce el costo
+	- Mejora el rendimiento
+	- Dominios de broadcast más pequeños
+	- Eficiencia IT
+	- Eficiencia de administración
+	- Projecto más simple y manejo de aplicación
+
+# Tipos de VLAN's
+	- VLAN default: también conocida como VLAN 1. Todos los puertos de un switch son miembros de la VLAN 1 por default.
+
+	- VLAN de datos: Las VLAN de datos son comunmente creadas para un grupo de usuarios o dispositivos específicos. Transportan tráfico generado por el usuario.
+
+	- VLAN nativa: Esta es la VLAN que transporta todo el tráfico sin etiquetar. Este tráfico no se origina de un puerto VLAN. La VLAN nativa es la VLAN 1 por defecto.
+
+	- VLAN de administración: Esta es la VLAN que es creada para transportar tráfico de manejo de red incluyendo SSH, SNMP, SYSLOG y más. La VLAN 1 (99) es por defecto la VLAN usada para la administración de la red.
+
+# VLAN's de voz
+
+	Para soportar tráfico de voz sensible al tiempo, los switched de cisco admiten  VLAN de voz que requiere:
+
+	- Ancho de banda asegurado
+	- Retraso de menos de 150 ms en toda la red para garantizar la calidad de la voz
+	- Prioridad de transmisión sobre otro tipo de tráficos de red
+	- Capacidad de ser enrutado a travpes de áreas congestionadas en la red
+
+# VLAN's troncales
+
+Una VLAN troncal es un enlace punto a punto que transporta más de una VLAN
+	- Comunmente establecida entre switches para soportar comunicación dentro de una VLAN
+	- Una VLAN troncal o un puerto troncal no son asociados a ninguna VLAN
+
+CISCO IOS admite IEEE 802.1Q, un popular protocolo de VLAN troncales
+
+# Control de los dominios de broadcast con VLAN's
+
+Si un puerto de un switch recibe un trama de broadcast, lo reenviará a todos los puertos excepto el puerto de origen
+	- Eventualmente, la red entera recibirá el broadcast porque la red es un solo dominio de broadcast
+
+Las VLAN's pueden ser usadas para limitar el alcance de los tramas  de broadcast porque cada VLAN es un dominio de broadcast
+	- Las VLAN's ayudan a controlar el alcance de un trama de broadcast y su impacto en la red
+
+# Etiquetado de tramas  de Ethernet para la verifiación de VLAN
+
+Antes de que un trama es reenviado por un enlace troncal, debe ser etiquetado con la información de su VLAN
+	- El etiquetado de tramas  es el proceso de agregación de una cabecera de identificación de VLAN al cuadro.
+	- Es usado para transimitir apropiadamente tramas  de multiples VLAN a través de un enlace troncal
+
+IEEE 802.1Q es un protocolo popular de VLAN troncal que define la estructura de agregación de etiquetado de cabecera al cuadro
+
+Los switches agregan la información en el etiquetado de VLAN después del campo de dirección MAC de origen.
+
+El campo en la etiqueta 802.1Q de VLAN incluye VLAN ID (VID)
+
+Los enlaces troncales agregan la etiqueta con información antes de enviar el trama y después remover la etiqueta antes de reenviar el trama por los puerto que no son troncales.
+
+# VLAN's nativas y el etiquetado 802.1Q
+
+Controla que el envio de tráfico en la VLAN nativa no sea etiquetado
+
+Los tramas  sin etiquetar recibidos, permanecen sin etiquetar y son alojados en la VLAN nativa cuando se reenvían
+
+Si no hay puertos asociados a la VLAN nativa y no hay otros enlaces troncales, un trama sin etiquetar es descartado
+
+Cuando se configura un puerto de un switch en un switch cisco, configure los dispositivos para que no envien tramas etiquetadas en la VLAN nativa
+
+En los switches cisco, la VLAN nativa es la VLAN 1 por defecto
+
+# Etiquetado de VLAN de voz
+
+Un puerto de acceso conectado a un teléfono ip de cisco puede ser configurado para usar dos VLAN's por separado
+	- Una VLAN para el tráfico de voz
+	- Una VLAN para el tráfico de datos de un dispositivo conectado al teléfono
+
+El enlace entre el switch y el teléfono ip se comporta como un enlace troncal que transporta el tráfico de ambas VLAN'se
+
+### Implementación de VLAN
+
+## Rangos de VLAN en switches Catalyst
+
+Las VLAN pueden dividirse en 2 categorias
+
+# VLAN's de rango normal
+
+	- Números de VLAN entre 1 y 1005
+	- Configuración almacenada en vlan.dat (in the flash memory)
+	- Los ID's del 1002 al 1005 estan reservados para el token Ring heredado y VLAN de interfaz de datos distribuidos de fibra (FDDI), se crean automáticamente y no se pueden eliminar.
+
+# VLAN's de rango extendido
+
+	- Números de VLAN entre 1006 y 4096
+	- Configuación almacenada en la configuración de ejecución (NVRAM)
+	- EL VLAN Trunking Protocol (VTP) no aprende VLAN's extendidas
+
+# Creación de una VLAN
+	- conf t
+	- vlan (vlan-id)
+	- name (vlan-name)
+	- end
+
+# Asignación de puerto a una VLAN
+	- conf t
+	- int (interface-id)
+	- switchport mode access
+	- switchport access vlan (vlan-id)
+	- end
+
+# Cambio de la membresia del puerto de VLAN
+	- conf t
+	- int (interface-id)
+	- no switchport access vlan
+	- end
+
+# Eliminación de VLAN's
+	- conf t
+	- no vlan (vlan-id)
+	- end
+
+# Verificación de la información de VLAN
+	- show vlan name (vlan-name)
+	- show vlan summary
+	- show interfaces vlan (vlan-id)
+
+# Configuración de enlaces troncales con IEEE 802.1Q
+	- conf t
+	- int (interface-id)
+	- switchport mode trunk
+	- switchport trunk native vlan (vlan-id)
+	- switchport trunk allowed vlan (vlan-list
+	- end
+
+# Reestablecer el estado por defecto de los troncales
+	- conf t
+	- int (interface-id)
+	- no switchport trunk native vlan (vlan-native-id)
+	- no switchport trunk allowed vlan (vlans-ids)
+	- end
+
+# Verificaión de los troncales
+	- show interface (interface-id) switchport
+
+# Problemas comunes con los troncales
+
+Los problemas con los troncales son comunmente asociados a una configuración incorrecta
+
+Los tipos más comunes de errores de configuración en los troncales son:
+	- Native VLAN mismatches
+	- Trunk Mode Mismatches
+	- Allowed VLAN's on Trunks
+
+Cuando se sospecha de un problema en el troncal, se recomienda solucionar el problema en el orden que se muestra arriba.
+
+# Enrutamiento entre VLAN's
+
+Los switches de capa 2 no pueden reenviar el tráfico entre VLAN's sin la asistencia de un router
+
+El enrutamiento entre VLAN's es un proceso para reenviar el tráfico en una red de una VLAN a otra usando un router
+
+# Enrutamiento entre VLAN's heredado
+  
+** (Legacy) En el pasado
+	- Los routers actuales fueron usados para enrutar entre VLAN's
+	- Cada VLAN estaba conectada a una interfaz física diferente del router
+	- Los paquetes llegarían al router mediante una interfaz, se enrutarían y dejarían a tráves de otra
+	- Debido a que las interfaces del router estaban conectadas a las VLAN's y tenían direcciones IP específicas de esa VLAN, se logró el enrutamiento entre VLAN's
+	- Las redes grandes con un gran número de VLAN's requerían muchas interfaces de router
+
+# Enrutamiento entre VLAN's con un router en una conexión (router-on-a-stick)
+	- El enfoque de router en una conexión utiliza solo una de las inter físicas del router
+	- Una de las interfaces físicas del router es configurada como un puerto troncal 802.1Q para entender las etiquetas de VLAN
+	- Se crean subinterfaces lógicas; una subinterfaz por VLAN
+	- Cada subinterfaz es configurada con una dirección ip de una VLAN que representa
+	- Los miembros de la VLAN son configurados para usar la dirección de la subinterfaz como una puerta de enlace por defecto.
+
+# configuración del enrutamiento legacy entre VLAN's 
+	- El enrutamiento legacy entre VLAN's requiere routers que tengan multiples interfaces físicas
+	- Cada una de las interfaces físicas es conectada a una única VLAN
+	- Cada interfaz tambien es configurada con una dirección IP para la subred asociada con la VLAN particular
+	- Los dispositivos de red usan el router como una puerta de enlace para acceder a los dispositivos conectados a las otras VLAN's
+
+# configuración del enrutamiento legacy entre VLAN's: configuración del switch
+	- conf t
+	- vlan (vlan-id)
+	- int (interface-id)
+	- switchport access vlan (vlan-id)
+
+# configuración del enrutamiento legacy entre VLAN's: configuración del router
+	- interface (interface-id)
+	- ip add (ip) (mask)
+	- no shut
+
+# configuración de router en una conexión
+	- Una alternativa al enrutamiento entre VLAN's heredado es usar VLAN troncal y subinterfaces
+	- Las VLAN's troncales permite que una sola interfaz física del router enrute tráfico para multiples VLAN's
+	- La interfaz física del router debe de estar conectada a un enlace troncal en el switch adjunto
+	- En el router, las subinterfaces se crean para cada una de las VLAN's
+	- A cada subinterfaz es asignada una dirección ip específica para su subred o VLAN y tambien es configurada para etiquetar tramas para esa VLAN
+
+# configuración de router en una conexión: configuración del switch
+	- conf t
+	- vlan (vlan-id)
+	- int (interface-id)
+	- switchport mode trunk
+	- end
+
+# configuración de router en una conexión: configuración de la interfaz en el router
+	- conf t
+	- int (interface-id).(vlan-id) **(g0/0.10)
+	- encapsulation dot1q (vlan-id)
+	- ip add (ip) (mask)
+	- int (interface-id)
+	- no shut
+
+# verifiación de las subinterfaces
+	- show ip route
