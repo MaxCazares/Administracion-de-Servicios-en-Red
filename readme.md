@@ -1,4 +1,4 @@
-# Administración de Servicios en Red con Leticia Leticia Henestrosa Carrasco
+# Administración de Servicios en Red con Leticia Henestrosa Carrasco
 
 Este repositorio contiene todas las prácticas de la materia Administración de Servicios en Red con la profesora Leticia Henestrosa Carrasco en el periodo febrero - junio de 2022 en modelo híbrido.
 
