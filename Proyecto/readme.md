@@ -45,7 +45,7 @@ Esta guia es una alternativa a instalar la máquina virtual de GNS3 en nuestra c
 
 **Apagar la máquina virtual cada vez que se termine de trabajar, esto es unicamente para ahorrar el crédito de la cuenta de Azure**
 
-## Configuración el cliente de GNS3 
+## Configuración del cliente de GNS3 
 
 1. Abrir la ventana de prefencias del cliente de GNS3 y ubicar el apartado de **Server > Main Server** 
 
