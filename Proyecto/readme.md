@@ -53,7 +53,7 @@ Esta guia es una alternativa a instalar la máquina virtual de GNS3 en nuestra c
 
 2. Llenar los siguientes campos con la información de nuestra máquina virtual
 
-    > Desmarcar la casilla de **Enable local server** (esto es para usar los recursos de nuestra computadora local)  
+    > Desmarcar la casilla de **Enable local server** (esto es para usar los recursos de nuestra máquina virtual)  
     **Protocol:** HTTP  
     **Host:** DNS name de nuestra máquina local  
     **Port:** 3080 TCP  
